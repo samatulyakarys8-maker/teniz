@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#06101f"/>
+      <stop offset=".55" stop-color="#0a2a43"/>
+      <stop offset="1" stop-color="#0a1628"/>
+    </linearGradient>
+    <linearGradient id="fish" x1="0" x2="1">
+      <stop offset="0" stop-color="#d7f8ff"/>
+      <stop offset=".45" stop-color="#00d4aa"/>
+      <stop offset="1" stop-color="#0ea5e9"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="640" fill="url(#bg)"/>
+  <path d="M0 420c130-72 252-90 365-54 87 28 174 28 261 1 103-33 214-21 334 35v238H0Z" fill="#06101f" opacity=".65"/>
+  <g opacity=".18" fill="none" stroke="#7dd3fc" stroke-width="5">
+    <path d="M70 130c80 30 160 30 240 0s160-30 240 0 160 30 240 0"/>
+    <path d="M120 210c80 30 160 30 240 0s160-30 240 0 160 30 240 0"/>
+  </g>
+  <path d="M194 333c108-128 238-191 389-191 80 0 151 22 213 66 28 20 28 62 0 82-62 44-133 66-213 66-151 0-281-63-389-191Z" fill="url(#fish)"/>
+  <path d="M194 333 82 407c-16 10-36-6-28-24l39-88-39-88c-8-18 12-34 28-24l112 74Z" fill="#00d4aa"/>
+  <circle cx="692" cy="238" r="24" fill="#06101f"/>
+  <path d="M381 180c50 64 56 117 18 160" fill="none" stroke="#06101f" stroke-width="12" stroke-linecap="round" opacity=".38"/>
+  <text x="52" y="578" fill="#e6f7ff" font-family="Arial, sans-serif" font-size="38" font-weight="700">Teniz demo catch photo</text>
+</svg>

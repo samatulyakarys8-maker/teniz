@@ -15,14 +15,32 @@ export async function getLots(): Promise<LotWithDetails[]> {
   const supabase = supabaseAnon();
   if (!supabase) return activeLotsWithDetails();
 
-  const { data, error } = await supabase
+  const { data: lots, error: lotsError } = await supabase
     .from("lots")
-    .select("*, catch:catches(*), fisherman:users(*)")
+    .select("*")
     .eq("status", "active")
     .order("created_at", { ascending: false });
 
-  if (error || !data) return activeLotsWithDetails();
-  return data as LotWithDetails[];
+  if (lotsError || !lots) return activeLotsWithDetails();
+
+  const catchIds = lots.map((lot) => lot.catch_id);
+  const fishermanIds = lots.map((lot) => lot.fisherman_id);
+  const [{ data: catches }, { data: users }] = await Promise.all([
+    supabase.from("catches").select("*").in("id", catchIds),
+    supabase.from("users").select("*").in("id", fishermanIds),
+  ]);
+
+  const detailed = lots
+    .map((lot) => {
+      const catchItem = catches?.find((item) => item.id === lot.catch_id);
+      const fisherman = users?.find((user) => user.id === lot.fisherman_id);
+      return catchItem && fisherman
+        ? ({ ...lot, catch: catchItem, fisherman } as LotWithDetails)
+        : null;
+    })
+    .filter(Boolean) as LotWithDetails[];
+
+  return detailed.length ? detailed : activeLotsWithDetails();
 }
 
 export async function getDashboardData() {
@@ -98,10 +116,10 @@ function getPassportFromDemo(qrId: string) {
 }
 
 export async function createCatch(payload: Partial<Catch>) {
-  const supabase = supabaseAdmin();
+  const supabase = supabaseAdmin() ?? supabaseAnon();
   const catchItem: Catch = {
     id: payload.id ?? crypto.randomUUID(),
-    fisherman_id: payload.fisherman_id ?? "usr_fisherman_1",
+    fisherman_id: payload.fisherman_id ?? "00000000-0000-0000-0000-000000000001",
     fish_type: payload.fish_type ?? "сазан",
     weight_kg: Number(payload.weight_kg ?? 0),
     size_cm: Number(payload.size_cm ?? 0),
@@ -128,11 +146,11 @@ export async function createCatch(payload: Partial<Catch>) {
 }
 
 export async function createLot(payload: Partial<Lot>) {
-  const supabase = supabaseAdmin();
+  const supabase = supabaseAdmin() ?? supabaseAnon();
   const lot: Lot = {
     id: payload.id ?? crypto.randomUUID(),
     catch_id: payload.catch_id ?? "",
-    fisherman_id: payload.fisherman_id ?? "usr_fisherman_1",
+    fisherman_id: payload.fisherman_id ?? "00000000-0000-0000-0000-000000000001",
     price_per_kg: Number(payload.price_per_kg ?? 0),
     weight_kg: Number(payload.weight_kg ?? 0),
     status: payload.status ?? "active",

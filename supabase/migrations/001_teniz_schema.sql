@@ -62,6 +62,8 @@ create policy "public read catches" on public.catches for select using (true);
 create policy "public read lots" on public.lots for select using (true);
 create policy "public read quotas" on public.quotas for select using (true);
 create policy "public read zones" on public.zones for select using (true);
+create policy "mvp insert catches" on public.catches for insert with check (true);
+create policy "mvp insert lots" on public.lots for insert with check (true);
 
 insert into public.users (id, name, phone, role) values
   ('00000000-0000-0000-0000-000000000001', 'Арман Сагындык', '+7 701 225 44 10', 'fisherman'),

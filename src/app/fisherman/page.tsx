@@ -5,6 +5,7 @@ import { Anchor, BadgeCheck, Camera, Loader2, Store } from "lucide-react";
 import { FishBadge } from "@/components/FishBadge";
 import { QRCodeCard } from "@/components/QRCodeCard";
 import { TopBar } from "@/components/TopBar";
+import { useLanguage } from "@/components/LanguageProvider";
 import { checkLegality, fishTypes, formatTenge } from "@/lib/fish";
 import type { FishAiVerdict, FishType } from "@/lib/types";
 
@@ -18,6 +19,7 @@ type SavedCatch = {
 };
 
 export default function FishermanPage() {
+  const { t } = useLanguage();
   const [photo, setPhoto] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
   const [verdict, setVerdict] = useState<FishAiVerdict | null>(null);
@@ -71,7 +73,7 @@ export default function FishermanPage() {
   async function saveCatchAndLot() {
     setSaving(true);
     const catchPayload = {
-      fisherman_id: "usr_fisherman_1",
+      fisherman_id: "00000000-0000-0000-0000-000000000001",
       fish_type: fishType,
       weight_kg: weightKg,
       size_cm: sizeCm,
@@ -101,7 +103,7 @@ export default function FishermanPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           catch_id: created.id,
-          fisherman_id: "usr_fisherman_1",
+          fisherman_id: "00000000-0000-0000-0000-000000000001",
           price_per_kg: price,
           weight_kg: weightKg,
           status: "active",
@@ -113,22 +115,20 @@ export default function FishermanPage() {
 
   return (
     <main className="min-h-screen pb-28 text-white">
-      <TopBar title="Кабинет рыбака" subtitle="Фото, AI, QR, продажа" />
+      <TopBar title={t.fisherman.title} subtitle={t.fisherman.subtitle} />
       <section className="mx-auto grid max-w-6xl gap-5 px-4 sm:px-8 lg:grid-cols-[0.95fr_1.05fr]">
         <div className="panel overflow-hidden">
           <div className="relative grid min-h-80 place-items-center bg-[#081426]">
             {preview ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={preview} alt="Фото улова" className="h-full max-h-96 w-full object-cover" />
+              <img src={preview} alt={t.fisherman.photo} className="h-full max-h-96 w-full object-cover" />
             ) : (
               <div className="text-center">
                 <span className="mx-auto grid size-20 place-items-center rounded-[2rem] bg-ocean-accent/12 text-ocean-accent">
                   <Camera className="size-9" />
                 </span>
-                <p className="mt-5 text-xl font-black">Фото улова</p>
-                <p className="mt-2 text-sm text-cyan-100/60">
-                  AI определит вид, размер и законность
-                </p>
+                <p className="mt-5 text-xl font-black">{t.fisherman.photo}</p>
+                <p className="mt-2 text-sm text-cyan-100/60">{t.fisherman.photoHint}</p>
               </div>
             )}
           </div>
@@ -141,7 +141,7 @@ export default function FishermanPage() {
                 className="sr-only"
                 onChange={(event) => choosePhoto(event.target.files?.[0])}
               />
-              Загрузить фото
+              {t.fisherman.upload}
             </label>
             <button
               type="button"
@@ -149,7 +149,7 @@ export default function FishermanPage() {
               disabled={loading}
               className="tap-target bg-ocean-accent text-ocean-bg hover:bg-[#24f0c6] disabled:opacity-60"
             >
-              {loading ? "AI анализ..." : "Проверить AI"}
+              {loading ? t.fisherman.analyzing : t.fisherman.analyze}
             </button>
           </div>
         </div>
@@ -158,7 +158,7 @@ export default function FishermanPage() {
           <div className="panel p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold text-cyan-100/60">Вердикт</p>
+                <p className="text-sm font-semibold text-cyan-100/60">{t.fisherman.verdict}</p>
                 <h2 className="mt-1 text-3xl font-black">
                   {legality.legal ? "CAN SELL" : "RELEASE"}
                 </h2>
@@ -170,7 +170,7 @@ export default function FishermanPage() {
                     : "bg-risk-red/15 text-risk-red"
                 }`}
               >
-                {legality.legal ? "МОЖНО ПРОДАВАТЬ" : "НУЖНО ОТПУСТИТЬ"}
+                {legality.legal ? t.fisherman.sell : t.fisherman.release}
               </span>
             </div>
             <p className="mt-4 text-cyan-100/70">{verdict?.["причина"] ?? legality.reason}</p>
@@ -178,7 +178,7 @@ export default function FishermanPage() {
 
           <div className="panel grid gap-4 p-5 sm:grid-cols-2">
             <label className="space-y-2">
-              <span className="text-sm font-semibold text-cyan-100/70">Вид рыбы</span>
+              <span className="text-sm font-semibold text-cyan-100/70">{t.fisherman.fishType}</span>
               <select
                 value={fishType}
                 onChange={(event) => setFishType(event.target.value as FishType)}
@@ -192,31 +192,16 @@ export default function FishermanPage() {
               </select>
             </label>
             <label className="space-y-2">
-              <span className="text-sm font-semibold text-cyan-100/70">Размер, см</span>
-              <input
-                value={sizeCm}
-                onChange={(event) => setSizeCm(Number(event.target.value))}
-                type="number"
-                className="h-14 w-full rounded-2xl border border-white/10 bg-ocean-panel px-4 text-white"
-              />
+              <span className="text-sm font-semibold text-cyan-100/70">{t.fisherman.size}</span>
+              <input value={sizeCm} onChange={(event) => setSizeCm(Number(event.target.value))} type="number" className="h-14 w-full rounded-2xl border border-white/10 bg-ocean-panel px-4 text-white" />
             </label>
             <label className="space-y-2">
-              <span className="text-sm font-semibold text-cyan-100/70">Вес, кг</span>
-              <input
-                value={weightKg}
-                onChange={(event) => setWeightKg(Number(event.target.value))}
-                type="number"
-                className="h-14 w-full rounded-2xl border border-white/10 bg-ocean-panel px-4 text-white"
-              />
+              <span className="text-sm font-semibold text-cyan-100/70">{t.fisherman.weight}</span>
+              <input value={weightKg} onChange={(event) => setWeightKg(Number(event.target.value))} type="number" className="h-14 w-full rounded-2xl border border-white/10 bg-ocean-panel px-4 text-white" />
             </label>
             <label className="space-y-2">
-              <span className="text-sm font-semibold text-cyan-100/70">Цена, ₸/кг</span>
-              <input
-                value={price}
-                onChange={(event) => setPrice(Number(event.target.value))}
-                type="number"
-                className="h-14 w-full rounded-2xl border border-white/10 bg-ocean-panel px-4 text-white"
-              />
+              <span className="text-sm font-semibold text-cyan-100/70">{t.fisherman.price}</span>
+              <input value={price} onChange={(event) => setPrice(Number(event.target.value))} type="number" className="h-14 w-full rounded-2xl border border-white/10 bg-ocean-panel px-4 text-white" />
             </label>
           </div>
 
@@ -228,12 +213,8 @@ export default function FishermanPage() {
                   {weightKg} кг · {formatTenge(price)}/кг
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={askPriceAdvisor}
-                className="tap-target bg-white/10 text-white hover:bg-white/15"
-              >
-                AI цена
+              <button type="button" onClick={askPriceAdvisor} className="tap-target bg-white/10 text-white hover:bg-white/15">
+                {t.fisherman.priceAi}
               </button>
             </div>
             {advice ? <p className="mt-4 leading-7 text-cyan-100/72">{advice}</p> : null}
@@ -252,11 +233,11 @@ export default function FishermanPage() {
             className="tap-target flex flex-1 items-center justify-center gap-2 bg-ocean-accent text-ocean-bg hover:bg-[#24f0c6] disabled:opacity-60"
           >
             {saving ? <Loader2 className="size-5 animate-spin" /> : <Store className="size-5" />}
-            {legality.legal ? "Создать лот" : "Зафиксировать отпуск"}
+            {legality.legal ? t.fisherman.createLot : t.fisherman.recordRelease}
           </button>
           <div className="hidden items-center gap-2 rounded-2xl border border-white/10 px-4 text-cyan-100/70 sm:flex">
             {legality.legal ? <BadgeCheck className="size-5 text-risk-green" /> : <Anchor className="size-5 text-risk-red" />}
-            {legality.legal ? "Заңды" : "Қайтару"}
+            {legality.legal ? t.fisherman.legal : t.fisherman.returnFish}
           </div>
         </div>
       </div>

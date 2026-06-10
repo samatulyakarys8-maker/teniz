@@ -1,75 +1,61 @@
+"use client";
+
 import Link from "next/link";
 import { Fish, Search, ShieldCheck, Waves } from "lucide-react";
+import { LanguageSwitch, useLanguage } from "@/components/LanguageProvider";
 
-const roles = [
-  {
-    title: "Рыбак",
-    kz: "Балықшы",
-    href: "/fisherman",
-    icon: Fish,
-    text: "Фото улова, AI-проверка законности, QR паспорт и быстрый выход на рынок.",
-  },
-  {
-    title: "Покупатель",
-    kz: "Сатып алушы",
-    href: "/buyer",
-    icon: Search,
-    text: "Живые лоты, расстояние до улова, контакт с рыбаком и сканирование паспорта.",
-  },
-  {
-    title: "Инспектор",
-    kz: "Инспектор",
-    href: "/inspector",
-    icon: ShieldCheck,
-    text: "Карта Каспия, квоты, риск-маркеры и AI-сигналы по подозрительным уловам.",
-  },
-];
+const roleCards = [
+  { key: "fisherman", href: "/fisherman", icon: Fish },
+  { key: "buyer", href: "/buyer", icon: Search },
+  { key: "inspector", href: "/inspector", icon: ShieldCheck },
+] as const;
 
 export default function LandingPage() {
+  const { t } = useLanguage();
+
   return (
     <main className="min-h-screen overflow-hidden bg-ocean-radial px-4 py-6 text-white sm:px-8">
       <section className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-7xl flex-col">
-        <nav className="flex items-center justify-between">
+        <nav className="relative flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <span className="grid size-12 place-items-center rounded-2xl bg-ocean-accent text-ocean-bg shadow-glow">
               <Waves className="size-7" />
             </span>
             <div>
               <p className="text-2xl font-black tracking-wide">Teniz</p>
-              <p className="text-sm text-cyan-100/60">Каспий балық шаруашылығы</p>
+              <p className="hidden text-sm text-cyan-100/60 sm:block">{t.tagline}</p>
             </div>
           </div>
-          <div className="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-cyan-100/70">
-            RU / KZ
+          <div className="fixed right-4 top-8 z-50 sm:static">
+            <LanguageSwitch />
           </div>
         </nav>
 
         <div className="grid flex-1 items-center gap-10 py-10 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="min-w-0 max-w-full">
             <div className="mb-8 inline-flex rounded-full border border-ocean-accent/30 bg-ocean-accent/10 px-4 py-2 text-sm font-semibold text-ocean-accent">
-              MVP для Mangystau Hackathon
+              {t.roleCta}
             </div>
             <h1 className="max-w-3xl text-[2.35rem] font-black leading-[1.04] tracking-tight sm:text-7xl">
               <span className="sm:hidden">
-                Цифровой путь
-                <br />
-                рыбы от Каспия
-                <br />
-                до прилавка.
+                {t.heroMobile.map((line) => (
+                  <span key={line}>
+                    {line}
+                    <br />
+                  </span>
+                ))}
               </span>
-              <span className="hidden sm:inline">
-                Цифровой путь рыбы от Каспия до прилавка.
-              </span>
+              <span className="hidden sm:inline">{t.heroDesktop}</span>
             </h1>
             <p className="mt-6 max-w-[22rem] text-lg leading-8 text-cyan-100/72 sm:max-w-2xl">
-              Улов фиксируется на берегу, AI проверяет законность, покупатель видит
-              прозрачный лот, а инспектор контролирует квоты и риски на карте.
+              {t.heroText}
             </p>
           </div>
 
           <div className="grid min-w-0 max-w-full gap-4 md:grid-cols-3 lg:grid-cols-1">
-            {roles.map((role) => {
+            {roleCards.map((role) => {
               const Icon = role.icon;
+              const copy = t.roles[role.key];
               return (
                 <Link
                   href={role.href}
@@ -82,12 +68,12 @@ export default function LandingPage() {
                       <Icon className="size-7" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-2xl font-black">{role.title}</span>
+                      <span className="block text-2xl font-black">{copy.title}</span>
                       <span className="block text-sm font-semibold text-ocean-accent">
-                        {role.kz}
+                        {copy.subtitle}
                       </span>
                       <span className="mt-3 block break-words text-[0.95rem] leading-7 text-cyan-100/68 sm:text-base">
-                        {role.text}
+                        {copy.text}
                       </span>
                     </span>
                   </div>

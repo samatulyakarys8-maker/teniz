@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { LanguageProvider } from "@/components/LanguageProvider";
 import { PwaRegister } from "@/components/PwaRegister";
 import "./globals.css";
 
@@ -42,8 +43,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <PwaRegister />
-        {children}
+        <LanguageProvider>
+          <PwaRegister />
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

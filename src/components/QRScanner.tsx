@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Camera, X } from "lucide-react";
+import { useLanguage } from "./LanguageProvider";
 
 export function QRScanner({
   onScan,
@@ -12,6 +13,7 @@ export function QRScanner({
   active: boolean;
   onClose: () => void;
 }) {
+  const { t } = useLanguage();
   const scannerRef = useRef<{ clear: () => Promise<void> } | null>(null);
   const [error, setError] = useState("");
 
@@ -40,14 +42,14 @@ export function QRScanner({
           () => undefined,
         );
       })
-      .catch(() => setError("Камера недоступна. Введите QR ID вручную."));
+      .catch(() => setError(t.qr.cameraError));
 
     return () => {
       mounted = false;
       scannerRef.current?.clear().catch(() => undefined);
       scannerRef.current = null;
     };
-  }, [active, onScan]);
+  }, [active, onScan, t.qr.cameraError]);
 
   if (!active) return null;
 
@@ -60,15 +62,15 @@ export function QRScanner({
               <Camera className="size-5" />
             </span>
             <div>
-              <h2 className="text-xl font-black text-white">Скан QR</h2>
-              <p className="text-sm text-cyan-100/60">Балық паспорты</p>
+              <h2 className="text-xl font-black text-white">{t.qr.scan}</h2>
+              <p className="text-sm text-cyan-100/60">{t.qr.passport}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
             className="grid size-11 place-items-center rounded-2xl bg-white/10 text-white"
-            aria-label="Закрыть сканер"
+            aria-label={t.qr.close}
           >
             <X className="size-5" />
           </button>
